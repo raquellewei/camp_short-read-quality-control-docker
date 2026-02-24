@@ -156,10 +156,14 @@ RUN printf '%s\n' \
 #     (the pipeline will fail gracefully rather than with a cryptic path error)
 #
 # Expected mounts:
-#   /data/input   — user's raw FASTQ files
-#   /data/output  — working directory for pipeline outputs
-#   /data/ref     — Bowtie2 index directory (optional, for host filtering)
-#   /data/config  — optional: override samples.csv or parameters.yaml
+#   /data/input    — user's raw FASTQ files
+#   /data/output   — working directory for pipeline outputs (real experiments)
+#   /data/ref      — Bowtie2 index directory (optional, for host filtering)
+#   /data/config   — optional: override samples.csv or parameters.yaml
+#   /data/test_out — dedicated output directory for the built-in test command
+#                    kept separate from /data/output to avoid mixing test and
+#                    real experiment outputs; agent binds a module-specific
+#                    host directory here (e.g. ~/tests/short-read-qc)
 #
 # Example docker run with all mounts:
 #   docker run \
@@ -168,9 +172,9 @@ RUN printf '%s\n' \
 #     -v /my/bowtie2_index:/data/ref \
 #     -v /my/config:/data/config \
 #     camp-srqc run -d /data/output -s /data/config/samples.csv
-RUN mkdir -p /data/input /data/output /data/ref /data/config
+RUN mkdir -p /data/input /data/output /data/ref /data/config /data/test_out
 
-VOLUME ["/data/input", "/data/output", "/data/ref", "/data/config"]
+VOLUME ["/data/input", "/data/output", "/data/ref", "/data/config", "/data/test_out"]
 
 # Generate test_data/samples.csv with container-correct paths.
 # This file is gitignored (setup.sh writes it locally with host paths),
